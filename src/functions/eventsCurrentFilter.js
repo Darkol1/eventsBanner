@@ -1,26 +1,27 @@
-const eventsCurrentFilter = (events, bool) => {
+import { compare } from "./compare";
+
+function eventsCurrentFilter(events, bool){
     let currArr =[];
     let pastArr =[];
-    events.map((event) => {
     let now = Date.now();
-    let dateEvent = event.date_end || event.date_start;
-    let eventYear = +(dateEvent.match(/\/(\d\d\d\d)$/)[1]);
-    let eventMonth = +(dateEvent.match(/^(\d\d)\//)[1]);
-    let eventDay = +(dateEvent.match(/\/(\d\d)\//)[1]);
-    let eventTime = eventYear + '-' + eventMonth + '-' + eventDay;
-    let timeStamp = Date.parse(eventTime);
+    for (let i = 0; i < events.length; i++) {
+    let dateEvent = events[i]['date_end'] || events[i]['date_start'] || 'unknown';
+    if(dateEvent === 'unknown') continue;
+    let timeStamp = Date.parse(dateEvent);
+
     if(
-        (timeStamp - now) >= 0
+        (timeStamp - now) > -86400000
     ){
-        currArr.push(event);
+        currArr.push(events[i]);
     }else{
-        pastArr.push(event);
+        pastArr.push(events[i]);
     }
-    return event;
-})
+}
         if(!bool){
+            currArr.sort(compare).reverse();
             return currArr;
         }else{
+            pastArr.sort(compare);
             return pastArr;
         }
 };
